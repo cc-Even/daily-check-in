@@ -707,7 +707,7 @@
     document.getElementById('checkDate').addEventListener('change', loadStatus);
 
     // 初始化日期为今天
-    document.getElementById('checkDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('checkDate').value = new Date().toLocaleDateString('sv-SE', {timeZone: "Asia/Shanghai"});
 
     // 应用初始化
     window.addEventListener('load', initApp);
