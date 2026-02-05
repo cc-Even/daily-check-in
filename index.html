@@ -406,10 +406,7 @@
 
     // 获取API基础URL（使用当前访问的主机地址）
     function getBaseUrl() {
-        const protocol = window.location.protocol;
-        const host = window.location.hostname;
-        const port = window.location.port || '8989';
-        return `${protocol}//${host}:${port}`;
+        return window.location.origin;
     }
 
     const API_BASE_URL = getBaseUrl();
