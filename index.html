@@ -404,6 +404,16 @@
     let imageFile = null;
     let statusData = null;
 
+    // 获取API基础URL（使用当前访问的主机地址）
+    function getBaseUrl() {
+        const protocol = window.location.protocol;
+        const host = window.location.hostname;
+        const port = window.location.port || '8989';
+        return `${protocol}//${host}:${port}`;
+    }
+
+    const API_BASE_URL = getBaseUrl();
+
     // 从URL获取token
     function getTokenFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -427,7 +437,7 @@
     async function loadPersons() {
     try {
     showLoading(true);
-    const response = await fetch(`http://localhost:8989/api/persons?token=${token}`);
+    const response = await fetch(`${API_BASE_URL}/api/persons?token=${token}`);
     const data = await response.json();
 
     if (data.code === 200) {
@@ -526,7 +536,7 @@
     formData.append('name', selectedPerson);
     formData.append('image', imageFile);
 
-    const response = await fetch(`http://localhost:8989/api/upload?token=${token}`, {
+    const response = await fetch(`${API_BASE_URL}/api/upload?token=${token}`, {
     method: 'POST',
     body: formData,
 });
@@ -575,7 +585,7 @@
     showLoadingStatus(true);
     const date = document.getElementById('checkDate').value || new Date().toISOString().split('T')[0];
 
-    const response = await fetch(`http://localhost:8989/api/status?token=${token}&date=${date}`);
+    const response = await fetch(`${API_BASE_URL}/api/status?token=${token}&date=${date}`);
     const data = await response.json();
 
     if (data.code === 200) {
