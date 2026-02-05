@@ -1,0 +1,22 @@
+{
+  "checkInPersonList": [
+    {
+      "name": "Yolo",
+      "email": "xx@qq.com",
+      "avatar": "avatar/jinmao.png"
+    },
+    {
+      "name": "Even",
+      "email": "xx@qq.com",
+      "avatar": "avatar/hamaster.png"
+    }
+  ],
+  "mentionTime": "21:00",
+  "checkInTime": "23:59",
+  "tokenMd5": "39ec5b1d3e126f44",
+  "smtpHost": "smtp.gmail.com",
+  "smtpPort": 587,
+  "smtpUser": "your_email@gmail.com",
+  "smtpPassword": "your_app_password",
+  "fromEmail": "your_email@gmail.com"
+}

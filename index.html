@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>力扣打卡系统</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+    body {
+    background: linear-gradient(135deg, #00BCD4, #9C27B0, #E91E63);
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+    padding: 1rem;
+}
+
+    .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+    .header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+    .header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+    .header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+    .nav-tabs {
+    display: flex;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 0.5rem;
+    margin-bottom: 2rem;
+    backdrop-filter: blur(10px);
+    border: 4px solid rgba(255, 255, 255, 0.3);
+}
+
+    .nav-tab {
+    flex: 1;
+    padding: 1rem;
+    border-radius: 16px;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+    .nav-tab.active {
+    background: white;
+    color: #9C27B0;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+    .nav-tab:not(.active):hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+    .card {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    backdrop-filter: blur(10px);
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+    .card h3 {
+    color: white;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+}
+
+    .card h3 i {
+    margin-right: 0.5rem;
+}
+
+    .person-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+    .person-item {
+    padding: 1.5rem;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 4px solid transparent;
+    text-align: center;
+}
+
+    .person-item.selected {
+    border-color: #FFEB3B;
+    background: linear-gradient(135deg, #FFCDD2, #F8BBD9);
+}
+
+    .person-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin: 0 auto 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: white;
+}
+
+    .person-name {
+    color: white;
+    font-weight: bold;
+}
+
+    .upload-area {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+    .upload-label {
+    display: block;
+    width: 100%;
+    padding: 2rem;
+    border: 4px dashed rgba(255, 255, 255, 0.5);
+    border-radius: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+    .upload-label:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+    .upload-label.has-file {
+    background: rgba(76, 175, 80, 0.2);
+    border-color: #4CAF50;
+}
+
+    .upload-icon {
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1rem;
+}
+
+    .upload-label.has-file .upload-icon {
+    color: #4CAF50;
+}
+
+    .upload-input {
+    display: none;
+}
+
+    .status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+    .status-item {
+    padding: 1.5rem;
+    border-radius: 16px;
+    text-align: center;
+    border: 4px solid transparent;
+}
+
+    .status-item.completed {
+    border-color: #4CAF50;
+    background: rgba(76, 175, 80, 0.2);
+}
+
+    .status-item.pending {
+    border-color: #F44336;
+    background: rgba(244, 67, 54, 0.2);
+}
+
+    .status-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin: 0 auto 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+    .status-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+    .btn {
+    width: 100%;
+    padding: 1.2rem;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+    .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
+
+    .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+    .status-message {
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+    .status-success {
+    background: rgba(76, 175, 80, 0.3);
+    border: 2px solid #4CAF50;
+    color: white;
+}
+
+    .status-error {
+    background: rgba(244, 67, 54, 0.3);
+    border: 2px solid #F44336;
+    color: white;
+}
+
+    .no-token {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+    color: white;
+    backdrop-filter: blur(10px);
+    border: 4px solid rgba(255, 255, 255, 0.3);
+}
+
+    .no-token i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: #FFEB3B;
+}
+
+    .code-block {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 12px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    margin: 1rem 0;
+    word-break: break-all;
+}
+
+    .loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+    @keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+    .hidden {
+    display: none;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>✨ 力扣打卡系统 ✨</h1>
+        <p>慎尔优游 勉尔遁思</p>
+    </div>
+
+    <div id="noTokenView" class="no-token hidden">
+        <i data-lucide="alert-circle"></i>
+        <h2>⚠️ 缺少访问令牌</h2>
+        <p>请在URL中添加token参数：</p>
+        <div class="code-block">
+            http://localhost:8989?token=your_token_here
+        </div>
+    </div>
+
+    <div id="mainApp" class="hidden">
+        <!-- 导航标签 -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="upload">
+                📸 上传打卡
+            </div>
+            <div class="nav-tab" data-tab="status">
+                📊 查看状态
+            </div>
+        </div>
+
+        <!-- 上传打卡页面 -->
+        <div id="uploadTab" class="tab-content">
+            <!-- 选择人员 -->
+            <div class="card">
+                <h3><i data-lucide="user"></i> 选择打卡人员</h3>
+                <div class="person-grid" id="personGrid">
+                    <!-- 动态填充 -->
+                </div>
+            </div>
+
+            <!-- 上传区域 -->
+            <div class="card">
+                <h3><i data-lucide="camera"></i> 上传打卡凭证</h3>
+
+                <div class="upload-area">
+                    <label for="imageInput" class="upload-label" id="uploadLabel">
+                        <i data-lucide="camera" class="upload-icon"></i>
+                        <div id="uploadText">
+                            <p>点击选择图片文件</p>
+                            <p style="font-size: 0.9rem; opacity: 0.8;">支持 JPG、PNG 格式</p>
+                        </div>
+                    </label>
+                    <input type="file" id="imageInput" class="upload-input" accept="image/*">
+                </div>
+
+                <div id="uploadStatus" class="status-message hidden"></div>
+                <div id="uploadResult" class="status-message hidden"></div>
+
+                <button id="uploadBtn" class="btn">
+                    <span id="uploadBtnText">🎉 确认上传</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 查看状态页面 -->
+        <div id="statusTab" class="tab-content hidden">
+            <!-- 日期选择 -->
+            <div class="card">
+                <h3><i data-lucide="calendar"></i> 选择查询日期</h3>
+                <input type="date" id="checkDate" class="form-control" style="width: 100%; padding: 1rem; border-radius: 12px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.2); color: white;">
+            </div>
+
+            <!-- 状态展示 -->
+            <div class="card">
+                <h3><i data-lucide="bar-chart"></i> <span id="statusTitle">打卡状态</span></h3>
+                <div id="loadingStatus" class="text-center py-8 hidden">
+                    <div class="loading"></div>
+                    <p style="color: white; margin-top: 1rem;">加载中...</p>
+                </div>
+                <div class="status-grid" id="statusGrid">
+                    <!-- 动态填充 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 初始化 Lucide 图标
+    lucide.createIcons();
+
+    // 全局变量
+    let token = '';
+    let persons = [];
+    let selectedPerson = '';
+    let imageFile = null;
+    let statusData = null;
+
+    // 从URL获取token
+    function getTokenFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('token');
+}
+
+    // 初始化应用
+    function initApp() {
+    token = getTokenFromUrl();
+
+    if (!token) {
+    document.getElementById('noTokenView').classList.remove('hidden');
+    return;
+}
+
+    document.getElementById('mainApp').classList.remove('hidden');
+    loadPersons();
+}
+
+    // 加载人员列表
+    async function loadPersons() {
+    try {
+    showLoading(true);
+    const response = await fetch(`http://localhost:8989/api/persons?token=${token}`);
+    const data = await response.json();
+
+    if (data.code === 200) {
+    persons = data.data;
+    renderPersons();
+    loadStatus();
+} else {
+    showStatusMessage(data.message || '获取人员列表失败', 'error');
+}
+} catch (error) {
+    showStatusMessage('网络错误，请检查连接', 'error');
+} finally {
+    showLoading(false);
+}
+}
+
+    // 渲染人员列表
+    function renderPersons() {
+    const grid = document.getElementById('personGrid');
+    grid.innerHTML = '';
+
+    persons.forEach((person, index) => {
+        const colors = ['from-pink-400 to-pink-600', 'from-blue-400 to-blue-600', 'from-green-400 to-green-600', 'from-purple-400 to-purple-600'];
+    const colorClass = colors[index % colors.length];
+
+    const item = document.createElement('div');
+    item.className = 'person-item';
+    item.onclick = () => selectPerson(person.name);
+
+    const avatar = document.createElement('div');
+    avatar.className = 'person-avatar';
+    // 如果person.avatar存在，可以使用person.avatar作为背景图片
+    if (person.avatar) {
+    avatar.style.backgroundImage = `url(${person.avatar})`;
+    avatar.style.backgroundSize = 'cover';
+    avatar.style.backgroundPosition = 'center';
+    } else {
+        avatar.style.background = `linear-gradient(135deg, #FFCDD2, #F8BBD9)`;
+        avatar.textContent = person.name.charAt(0);
+    }
+
+    const name = document.createElement('div');
+    name.className = 'person-name';
+    name.textContent = person.name;
+
+    item.appendChild(avatar);
+    item.appendChild(name);
+    grid.appendChild(item);
+});
+}
+
+    // 选择人员
+    function selectPerson(name) {
+    selectedPerson = name;
+    document.querySelectorAll('.person-item').forEach(item => {
+    item.classList.remove('selected');
+});
+    event.target.closest('.person-item').classList.add('selected');
+}
+
+    // 文件选择处理
+    document.getElementById('imageInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+    imageFile = file;
+    document.getElementById('uploadLabel').classList.add('has-file');
+    document.getElementById('uploadText').innerHTML = `
+                    <i data-lucide="upload" style="color: #4CAF50;"></i>
+                    <p>${file.name}</p>
+                `;
+    lucide.createIcons();
+    hideStatusMessage();
+} else {
+    showStatusMessage('请选择有效的图片文件', 'error');
+    this.value = '';
+}
+});
+
+    // 上传图片
+    async function uploadImage() {
+    if (!selectedPerson) {
+    showStatusMessage('请选择打卡人员', 'error');
+    return;
+}
+    if (!imageFile) {
+    showStatusMessage('请选择图片文件', 'error');
+    return;
+}
+
+    try {
+    showLoading(true);
+    document.getElementById('uploadBtnText').textContent = '上传中...';
+    document.getElementById('uploadBtn').disabled = true;
+
+    const formData = new FormData();
+    formData.append('name', selectedPerson);
+    formData.append('image', imageFile);
+
+    const response = await fetch(`http://localhost:8989/api/upload?token=${token}`, {
+    method: 'POST',
+    body: formData,
+});
+
+    const data = await response.json();
+
+    if (data.code === 200) {
+    showUploadResult(data.data);
+    imageFile = null;
+    document.getElementById('imageInput').value = '';
+    document.getElementById('uploadLabel').classList.remove('has-file');
+    document.getElementById('uploadText').innerHTML = `
+                        <i data-lucide="camera" class="upload-icon"></i>
+                        <p>点击选择图片文件</p>
+                        <p style="font-size: 0.9rem; opacity: 0.8;">支持 JPG、PNG 格式</p>
+                    `;
+    lucide.createIcons();
+    loadStatus(); // 刷新状态
+} else {
+    showStatusMessage(data.message || '上传失败', 'error');
+}
+} catch (error) {
+    showStatusMessage('网络错误，请重试', 'error');
+} finally {
+    showLoading(false);
+    document.getElementById('uploadBtnText').textContent = '🎉 确认上传';
+    document.getElementById('uploadBtn').disabled = false;
+}
+}
+
+    // 显示上传结果
+    function showUploadResult(result) {
+    const resultDiv = document.getElementById('uploadResult');
+    resultDiv.innerHTML = `
+                <i data-lucide="check-circle"></i>
+                ${result.name} 在 ${result.date} 打卡成功！
+            `;
+    resultDiv.className = 'status-message status-success';
+    resultDiv.classList.remove('hidden');
+    lucide.createIcons();
+}
+
+    // 加载打卡状态
+    async function loadStatus() {
+    try {
+    showLoadingStatus(true);
+    const date = document.getElementById('checkDate').value || new Date().toISOString().split('T')[0];
+
+    const response = await fetch(`http://localhost:8989/api/status?token=${token}&date=${date}`);
+    const data = await response.json();
+
+    if (data.code === 200) {
+    statusData = data.data;
+    document.getElementById('statusTitle').textContent = `${date} 打卡状态`;
+    renderStatus();
+} else {
+    showStatusMessage(data.message || '获取状态失败', 'error');
+}
+} catch (error) {
+    showStatusMessage('网络错误，请检查连接', 'error');
+} finally {
+    showLoadingStatus(false);
+}
+}
+
+    // 渲染打卡状态
+    function renderStatus() {
+    const grid = document.getElementById('statusGrid');
+    grid.innerHTML = '';
+
+    if (!statusData) return;
+
+    statusData.status.forEach((person, index) => {
+    const colors = ['from-pink-400 to-pink-600', 'from-blue-400 to-blue-600', 'from-green-400 to-green-600', 'from-purple-400 to-purple-600'];
+    const colorClass = colors[index % colors.length];
+
+    const item = document.createElement('div');
+    item.className = `status-item ${person.uploaded ? 'completed' : 'pending'}`;
+
+    const avatar = document.createElement('div');
+    avatar.className = 'status-avatar';
+    // 如果person.avatar存在，使用头像图片，否则显示名字首字母
+    if (person.avatar) {
+        avatar.style.backgroundImage = `url(${person.avatar})`;
+        avatar.style.backgroundSize = 'cover';
+        avatar.style.backgroundPosition = 'center';
+    } else {
+        avatar.style.background = `linear-gradient(135deg, #FFCDD2, #F8BBD9)`;
+        avatar.textContent = person.name.charAt(0);
+    }
+
+    const name = document.createElement('div');
+    name.style.color = 'white';
+    name.style.fontWeight = 'bold';
+    name.textContent = person.name;
+
+    const indicator = document.createElement('div');
+    indicator.className = 'status-indicator';
+    if (person.uploaded) {
+    indicator.innerHTML = `<i data-lucide="check-circle"></i> 已打卡`;
+} else {
+    indicator.innerHTML = `<i data-lucide="x-circle"></i> 未打卡`;
+}
+
+    item.appendChild(avatar);
+    item.appendChild(name);
+    item.appendChild(indicator);
+    grid.appendChild(item);
+});
+
+    lucide.createIcons();
+}
+
+    // 显示状态消息
+    function showStatusMessage(message, type) {
+    const statusDiv = document.getElementById('uploadStatus');
+    statusDiv.textContent = message;
+    statusDiv.className = `status-message status-${type}`;
+    statusDiv.classList.remove('hidden');
+}
+
+    // 隐藏状态消息
+    function hideStatusMessage() {
+    document.getElementById('uploadStatus').classList.add('hidden');
+}
+
+    // 显示加载状态
+    function showLoading(show) {
+    // 这里可以添加全局加载状态逻辑
+}
+
+    // 显示状态页加载
+    function showLoadingStatus(show) {
+    const loadingEl = document.getElementById('loadingStatus');
+    if (show) {
+    loadingEl.classList.remove('hidden');
+} else {
+    loadingEl.classList.add('hidden');
+}
+}
+
+    // 切换标签页
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        const targetTab = this.getAttribute('data-tab');
+
+        // 更新标签样式
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+
+        // 显示对应内容
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.add('hidden');
+        });
+        document.getElementById(`${targetTab}Tab`).classList.remove('hidden');
+
+        // 如果切换到状态页，加载数据
+        if (targetTab === 'status') {
+            loadStatus();
+        }
+    });
+});
+
+    // 上传按钮事件
+    document.getElementById('uploadBtn').addEventListener('click', uploadImage);
+
+    // 日期选择事件
+    document.getElementById('checkDate').addEventListener('change', loadStatus);
+
+    // 初始化日期为今天
+    document.getElementById('checkDate').value = new Date().toISOString().split('T')[0];
+
+    // 应用初始化
+    window.addEventListener('load', initApp);
+</script>
+</body>
+</html>
