@@ -307,6 +307,70 @@
     .hidden {
     display: none;
 }
+
+    .proof-image-container {
+    margin-top: 0.5rem;
+    width: 100%;
+}
+
+    .proof-image {
+    width: 100%;
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    border: 2px solid rgba(255,255,255,0.3);
+}
+
+    .proof-image:hover {
+    transform: scale(1.02);
+}
+
+    .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+    .modal-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+}
+
+    .modal-image {
+    max-width: 100%;
+    max-height: 85vh;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+    .modal-title {
+    text-align: center;
+    color: white;
+    margin-top: 1rem;
+    font-size: 1.2rem;
+}
+
+    .modal-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -641,6 +705,17 @@
     item.appendChild(avatar);
     item.appendChild(name);
     item.appendChild(indicator);
+
+    // 如果有打卡凭证图片，添加图片展示
+    if (person.proofImage) {
+        const proofContainer = document.createElement('div');
+        proofContainer.className = 'proof-image-container';
+        proofContainer.innerHTML = `
+            <img src="${person.proofImage}" class="proof-image" alt="打卡凭证" onclick="showProofImage('${person.proofImage}', '${person.name}')">
+        `;
+        item.appendChild(proofContainer);
+    }
+
     grid.appendChild(item);
 });
 
@@ -708,6 +783,25 @@
 
     // 应用初始化
     window.addEventListener('load', initApp);
+
+    // 显示打卡凭证大图
+    function showProofImage(imageSrc, personName) {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.onclick = function(e) {
+            if (e.target === modal) {
+                document.body.removeChild(modal);
+            }
+        };
+        modal.innerHTML = `
+            <div class="modal-content">
+                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+                <img src="${imageSrc}" class="modal-image" alt="打卡凭证">
+                <div class="modal-title">${personName} 的打卡凭证</div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
 </script>
 </body>
 </html>

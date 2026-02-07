@@ -433,6 +433,19 @@ func startScheduler() {
 	}()
 }
 
+// getCheckInRecord 获取用户的打卡记录（包含图片路径）
+func getCheckInRecord(name string, date string) (bool, string) {
+	var filePath sql.NullString
+	err := db.QueryRow("SELECT file_path FROM checkin_records WHERE name = ? AND date = ?", name, date).Scan(&filePath)
+	if err != nil {
+		return false, ""
+	}
+	if filePath.Valid {
+		return true, filePath.String
+	}
+	return true, ""
+}
+
 // getCheckInStatus 获取打卡状态（额外提供的接口）
 func getCheckInStatus(c *gin.Context) {
 	date := c.Query("date")
@@ -444,12 +457,17 @@ func getCheckInStatus(c *gin.Context) {
 	var statusList []map[string]interface{}
 
 	for _, person := range cfg.CheckInPersonList {
-		uploaded := checkUserUploaded(person.Name, date)
-		statusList = append(statusList, map[string]interface{}{
+		uploaded, filePath := getCheckInRecord(person.Name, date)
+		statusItem := map[string]interface{}{
 			"name":     person.Name,
 			"avatar":   person.Avatar,
 			"uploaded": uploaded,
-		})
+		}
+		if uploaded && filePath != "" {
+			// 将文件路径转换为URL路径
+			statusItem["proofImage"] = "/" + strings.ReplaceAll(filePath, "\\", "/")
+		}
+		statusList = append(statusList, statusItem)
 	}
 
 	c.JSON(http.StatusOK, Response{
@@ -499,6 +517,9 @@ func main() {
 		c.File("avatar/" + name)
 		return
 	})
+
+	// 静态文件服务：上传的打卡凭证图片
+	r.Static("/uploads", uploadDir)
 
 	// API路由组（需要Token验证）
 	api := r.Group("/api")
